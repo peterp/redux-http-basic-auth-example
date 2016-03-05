@@ -61,7 +61,7 @@ the vast majority of the code is sanitizing the request process and can be abstr
 ```
 dispatch(loginRequest())
 ```
-We update our store setting an `isLoggingIn` property to `true`, this is generally used to display a loading indicator and disabling the login button.
+Updates our Redux store, by setting a `isLoggingIn` property to `true`, this is used to display a loading indicator and disable the login button.
 
 ```
 const hash = new Buffer(`${username}:${password}`).toString('base64')
@@ -71,19 +71,19 @@ return fetch('https://httpbin.org/basic-auth/admin/secret', {
   }
 /* ... */
 ```
-Our example uses HTTP basic access authentication, so we've generated a base64 hash  from the `username` and `password` and added it to the `Authorization` headers of our request.
+Our example uses HTTP basic access authentication, so we've generated a base64 hash  from the `username` and `password` and added the `Authorization` headers to our request.
 
 ```
 dispatch(loginSuccess(hash, data.user))
 ```
-If everything went well then we dispatch the `LOGIN_SUCCESS` action along with the `hash` and `user` object. The `hash` is used in subsequent API requests.
+If everything went well then we dispatch the `LOGIN_SUCCESS` action along with our `hash` and `user` object. The `hash` is used in subsequent API requests.
 
 ```
 dispatch(loginFailure(data.error || 'Log in failed')
 ```
-If the request failed then we need to update the login view, removing the loading indicator, enabling the submit button again, and display an error message.
+If the request failed then we need to update the login view, removing the loading indicator, enabling the submit button, and displaying an error message.
 
-The `loginSuccess`, `loginFailure`, and `loginRequest` action creators are fairly generic and don't really warrant code samples. (See `actions/user.js`)
+_The `loginSuccess`, `loginFailure`, and `loginRequest` action creators are fairly generic and don't really warrant code samples. (See `actions/user.js`)_
 
 ### Reducer ###
 
