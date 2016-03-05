@@ -26,6 +26,8 @@ export function loginFailure(error) {
 export function login(username, password) {
   return (dispatch) => {
 
+    // We use this to update `isLoggingIn` to `true` in our store, which can
+    // be used to display an activity indicator on the login view.
     dispatch(loginRequest())
 
     // Note: This only works in node.js, use an implementation that works
@@ -45,10 +47,12 @@ export function login(username, password) {
       return json
     })
     .then(
+      // success
       data => {
         // data = { authenticated: true, user: 'admin' }
         dispatch(loginSuccess(hash, data.user))
       },
+      // failure
       (response, data) => dispatch(loginFailure(data.error || 'Log in failed'))
     )
   }

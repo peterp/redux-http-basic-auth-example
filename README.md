@@ -12,6 +12,7 @@ When an app communicates with a HTTP API, which enforces some form of authentica
 
 With the work flow defined above we'll start with the Reflux _action creators_ and _reducers_.
 
+## Action Creators ##
 
 In _step 2_ the user taps the submit button, which dispatches the `login(username, password)` function.
 
@@ -21,10 +22,14 @@ In _step 2_ the user taps the submit button, which dispatches the `login(usernam
 export function login(username, password) {
   return (dispatch) => {
 
-    /* We use this to update the state of `isLoggingIn` to `true` in our store, which can be used to display an activity indicator on the login view. */
+    // We use this to update the state of `isLoggingIn` to `true` in our
+    // store, which can be used to display an activity indicator on the login
+    // view.
     dispatch(loginRequest())
 
-    /* This only works in Node, use an implementation that work for the platform you're using, e.g.: `base64-js` for React Native, or `btoa()`` for browsers. */
+    // This only works in Node, use an implementation that work for the
+    // platform you're using, e.g.: `base64-js` for React Native, or `btoa()`
+    // for browsers, etc...
     const hash = new Buffer(`${username}:${password}`).toString('base64')
     return fetch('https://httpbin.org/basic-auth/admin/secret', {
       headers: {
@@ -48,3 +53,9 @@ export function login(username, password) {
   }
 }
 ```
+
+The above function dispatches 3 other actions: `LOGIN_REQUEST`, `LOGIN_FAILURE`, `LOGIN_SUCCESS`. (They're fairly generic, and not really worth documenting - Check `actions/user.js` for their implementation.)
+
+Which brings us to the reducer.
+
+## Reducers ##
