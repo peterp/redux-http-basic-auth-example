@@ -12,7 +12,9 @@ When an app communicates with a HTTP API, which enforces some form of authentica
 
 With the work flow defined above we'll start with the Reflux _action creators_ and _reducers_.
 
-## Action Creators ##
+# Logging In #
+
+### Action Creators ###
 
 In _step 2_ the user taps the submit button, which dispatches the `login(username, password)` function.
 
@@ -58,22 +60,26 @@ export function login(username, password) {
 
 The above function dispatches 3 other actions: `LOGIN_REQUEST`, `LOGIN_FAILURE`, `LOGIN_SUCCESS`. (They're fairly generic, and not really worth documenting - Check `actions/user.js`)
 
-## Reducers ##
+### Reducers ###
 
-In our reducer we can use `isLoggingIn`, `isAuthenticated`, and `error`
-to update the user-interface.
+Some of the properties in the reducer can be used to update the
+UI.
+
+  - `isLoggingIn`:  Display a loading indicator.
+  - `isAuthenticated`: Hide/ Show a login modal
+  - `error`: Self explanatory.
 
 ```
 /// reducers/user.js
 
 function user(state = {
-  isLoggingIn: false, // loading indicator
-  isAuthenticated: false // show, or hide the authentication modal.
+  isLoggingIn: false,
+  isAuthenticated: false
 }, action) {
   switch(action.type) {
     case LOGIN_REQUEST:
       return {
-        isLoggingIn: true,
+        isLoggingIn: true, // Show a loading indicator.
         isAuthenticated: false
       }
     case LOGIN_FAILURE:
@@ -85,8 +91,8 @@ function user(state = {
     case LOGIN_SUCCESS:
       return {
         isLoggingIn: false,
-        isAuthenticated: true,
-        hash: action.hash,
+        isAuthenticated: true, // Dismiss the login view.
+        hash: action.hash, // Used in subsequent API requests.
         user: action.user
       }
     default:
@@ -94,3 +100,5 @@ function user(state = {
   }
 }
 ```
+
+# subsequent API requests #

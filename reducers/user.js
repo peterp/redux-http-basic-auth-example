@@ -1,8 +1,3 @@
-
-// The request, failure, success pattern is very typical when performing
-// HTTP requests. The amount of boilerplate can be reduced using Redux
-// middleware, _or so I've read._
-
 import {
   LOGIN_REQUEST,
   LOGIN_FAILURE,
@@ -16,7 +11,7 @@ function user(state = {
   switch(action.type) {
     case LOGIN_REQUEST:
       return {
-        isLoggingIn: true,
+        isLoggingIn: true, // Show a loading indicator.
         isAuthenticated: false
       }
     case LOGIN_FAILURE:
@@ -28,8 +23,8 @@ function user(state = {
     case LOGIN_SUCCESS:
       return {
         isLoggingIn: false,
-        isAuthenticated: true,
-        hash: action.hash,
+        isAuthenticated: true, // Hide the login view.
+        hash: action.hash, // Used in subsequent API requests.
         user: action.user
       }
     default:
