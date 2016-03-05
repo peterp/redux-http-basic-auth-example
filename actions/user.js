@@ -49,6 +49,8 @@ export function login(username, password) {
     .then(
       // success
       data => {
+        // We pass the `authentication hash` down to the reducer so that it
+        // can be used in subsequent API requests.
         // data = { authenticated: true, user: 'admin' }
         dispatch(loginSuccess(hash, data.user))
       },

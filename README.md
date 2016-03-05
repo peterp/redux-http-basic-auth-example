@@ -45,6 +45,8 @@ export function login(username, password) {
     })
     .then(
       data => {
+        // We pass the `authentication hash` down to the reducer so that it
+        // can be used in subsequent API requests.
         // data = { authenticated: true, user: 'admin' }
         dispatch(loginSuccess(hash, data.user))
       },
@@ -54,8 +56,41 @@ export function login(username, password) {
 }
 ```
 
-The above function dispatches 3 other actions: `LOGIN_REQUEST`, `LOGIN_FAILURE`, `LOGIN_SUCCESS`. (They're fairly generic, and not really worth documenting - Check `actions/user.js` for their implementation.)
-
-Which brings us to the reducer.
+The above function dispatches 3 other actions: `LOGIN_REQUEST`, `LOGIN_FAILURE`, `LOGIN_SUCCESS`. (They're fairly generic, and not really worth documenting - Check `actions/user.js`)
 
 ## Reducers ##
+
+In our reducer we can use `isLoggingIn`, `isAuthenticated`, and `error`
+to update the user-interface.
+
+```
+/// reducers/user.js
+
+function user(state = {
+  isLoggingIn: false, // loading indicator
+  isAuthenticated: false // show, or hide the authentication modal.
+}, action) {
+  switch(action.type) {
+    case LOGIN_REQUEST:
+      return {
+        isLoggingIn: true,
+        isAuthenticated: false
+      }
+    case LOGIN_FAILURE:
+      return {
+        isLoggingIn: false,
+        isAuthenticated: false,
+        error: action.error
+      }
+    case LOGIN_SUCCESS:
+      return {
+        isLoggingIn: false,
+        isAuthenticated: true,
+        hash: action.hash,
+        user: action.user
+      }
+    default:
+      return state
+  }
+}
+```
