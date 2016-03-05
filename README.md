@@ -10,13 +10,9 @@ When an app communicates with a HTTP API, which enforces some form of authentica
         5. If at any stage, during an API request, the hash or token doesn't work anymore (401 - Unauthorized), then the user is prompted to re-enter their credentials.
       6. On failure (401 - Unauthorized): The client displays an error message to the user, prompting them re-enter their credentials.
 
-With the work flow defined above we'll start with the Reflux _action creators_ and _reducers_.
+Based on the work flow defined above we start our app by displaying a login form, _step 2_ kicks in when the user taps the login button...
 
 # Logging In #
-
-### Action Creators ###
-
-In _step 2_ the user taps the submit button, which dispatches the `login(username, password)` function.
 
 ```
 /// actions/user.js
@@ -58,16 +54,38 @@ export function login(username, password) {
 }
 ```
 
-The above function dispatches 3 other actions: `LOGIN_REQUEST`, `LOGIN_FAILURE`, `LOGIN_SUCCESS`. (They're fairly generic, and not really worth documenting - Check `actions/user.js`)
+There's a lot going on in the function above, but take comfort in the fact that
+the vast majority of the code is sanitizing the request process and can be abstracted away.
 
-### Reducers ###
 
-Some of the properties in the reducer can be used to update the
-UI.
+```
+dispatch(loginRequest())
+```
+We update our store setting an `isLoggingIn` property to `true`, this is generally used to display a loading indicator and disabling the login button.
 
-  - `isLoggingIn`:  Display a loading indicator.
-  - `isAuthenticated`: Hide/ Show a login modal
-  - `error`: Self explanatory.
+```
+const hash = new Buffer(`${username}:${password}`).toString('base64')
+return fetch('https://httpbin.org/basic-auth/admin/secret', {
+  headers: {
+    'Authorization': `Basic ${hash}`
+  }
+/* ... */
+```
+Our example uses HTTP basic access authentication, so we've generated a base64 hash  from the `username` and `password` and added it to the `Authorization` headers of our request.
+
+```
+dispatch(loginSuccess(hash, data.user))
+```
+If everything went well then we dispatch the `LOGIN_SUCCESS` action along with the `hash` and `user` object. The `hash` is used in subsequent API requests.
+
+```
+dispatch(loginFailure(data.error || 'Log in failed')
+```
+If the request failed then we need to update the login view, removing the loading indicator, enabling the submit button again, and display an error message.
+
+The `loginSuccess`, `loginFailure`, and `loginRequest` action creators are fairly generic and don't really warrant code samples. (See `actions/user.js`)
+
+### Reducer ###
 
 ```
 /// reducers/user.js
@@ -101,4 +119,6 @@ function user(state = {
 }
 ```
 
-# subsequent API requests #
+# Subsequent API requests #
+
+Now that we have a authentication `hash` in our store.
