@@ -1,0 +1,29 @@
+{
+  "name": "redux-http-basic-auth-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:watch": "nodemon index.js --exec babel-node --presets es2015"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/peterp/redux-http-basic-auth-example.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/peterp/redux-http-basic-auth-example/issues"
+  },
+  "homepage": "https://github.com/peterp/redux-http-basic-auth-example#readme",
+  "dependencies": {
+    "isomorphic-fetch": "^2.2.1",
+    "readline-sync": "^1.4.1",
+    "redux": "^3.3.1",
+    "redux-thunk": "^1.0.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.6.5",
+    "babel-preset-es2015": "^6.6.0"
+  }
+}
