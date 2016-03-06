@@ -1,4 +1,4 @@
-# redux-http-basic-auth-example
+# Redux HTTP Basic Authentication
 
 When an app communicates with a HTTP API, which enforces some form of authentication, the app typically follows these steps:
 
@@ -9,11 +9,9 @@ When an app communicates with a HTTP API, which enforces some form of authentica
         5. If the token/ hash does not work during any of the subsequent API requests (401 - Unauthorized), we'll need to invalidate the hash/ token and prompt the user to log in again.
       6. Or, on failure (401 - Unauthorized): We display an error message to the user, prompting them re-enter their credentials.
 
-Based on the work flow defined above we start our app by displaying a login form, _step 2_ kicks in when the user taps the login button... Dispatching the `login` action creator:
-
 # Logging In #
 
-Let's jump into some code:
+Based on the work flow defined above we start our app by displaying a login form, _step 2_ kicks in when the user taps the login button... Dispatching the `login` action creator, let's jump into some code...
 
 ```
 /// actions/user.js
@@ -45,9 +43,10 @@ export function login(username, password) {
     })
     .then(
       data => {
+        // data = { authenticated: true, user: 'admin' }
         // We pass the `authentication hash` down to the reducer so that it
         // can be used in subsequent API requests.
-        // data = { authenticated: true, user: 'admin' }
+
         dispatch(loginSuccess(hash, data.user))
       },
       (response, data) => dispatch(loginFailure(data.error || 'Log in failed'))
@@ -63,7 +62,7 @@ The first thing we do is dispatch an action creator:
 ```
 dispatch(loginRequest())
 ```
-Which results in our state letting us know that the user `isLoggingIn`. We use this to display an activity indicator (_spinning wheel_), and to disable the log in button in our log in view.
+Which results in our store letting us know that the user `isLoggingIn`. We use this to display an activity indicator (_spinning wheel, "Loading...", etc._), and to disable the log in button in our log in view.
 
 Next we base64 encode our credentials, and setup a fetch request.
 ```
@@ -79,18 +78,18 @@ Everything went well, so we...
 ```
 dispatch(loginSuccess(hash, data.user))
 ```
-Our `LOGIN_SUCCESS` action results in the `hash` been stored in our state, which will be used in every subsequent request.
+Our `LOGIN_SUCCESS` action results in us having an authentication `hash` in our store, which we'll use in subsequent requests.
 
 If something went wrong then we want to let the user know...
 ```
 dispatch(loginFailure(data.error || 'Log in failed')
 ```
 
-_The `loginSuccess`, `loginFailure`, and `loginRequest` action creators are fairly generic and don't really warrant code samples. (See `actions/user.js`)_
+_The `loginSuccess`, `loginFailure`, and `loginRequest` action creators are fairly generic and don't really warrant code samples. (See `[actions/user.js](https://github.com/peterp/redux-http-basic-auth-example/blob/master/actions/user.js)`)_
 
 ### Reducer ###
 
-Our reducer is fairly typical, simply updating our store for each action it receives.
+Our reducer is also typical:
 
 ```
 /// reducers/user.js
@@ -126,8 +125,9 @@ function user(state = {
 
 # Subsequent API requests #
 
-We now have an authentication hash in our store, which we can use in subsequent action creators on requests.
+Now that we have an authentication hash in our store we can use it in subsequent action creators, passing it in to requests.
 
+In our example below we're fetching a list of friends for our authenticated user:
 ```
 /// actions/friends.js
 export function fetchFriends() {
@@ -169,6 +169,7 @@ export function fetchFriends() {
 
 You'll find that most API requests typically dispatches the same 3 actions as above: `API_REQUEST`, `API_SUCCESS`, and `API_FAILURE`, and as such the majority of the request/ response code can be pushed into [middleware](https://github.com/reactjs/redux/issues/99#issuecomment-112198579).
 
+We fetch the hash authentication token from the store and setup the request.
 ```
 const hash = getState().user.hash
 return fetch(`https://httpbin.org/get/friends/`, {
@@ -177,7 +178,8 @@ return fetch(`https://httpbin.org/get/friends/`, {
   }
 })
 ```
-We fetch the hash authentication token from the store and setup the request. If our API requests with a 401 unauthorized status code then we've got to remove our hash from the store, and present the user with a log in view.
+
+If the API response with a 401 unauthorized status code then we've got to remove our hash from the store, and present the user with a log in view again.
 ```
 // did our request fail because our auth credentials aren't working?
 if (response.status == 401) {
